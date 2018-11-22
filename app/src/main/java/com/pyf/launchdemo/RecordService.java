@@ -102,20 +102,38 @@ public class RecordService extends Service {
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder.getSurface(), null, null);
     }
 
+    //R15 GG
     private void initRecorder() {
+        createDirectory();
+        File file = new File(Environment.getExternalStorageDirectory() + "/screenrecord/", System.currentTimeMillis() + ".mp4");
+        Toast.makeText(getApplicationContext(), file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile(getsaveDirectory());
+        mediaRecorder.setOutputFile(file.getAbsolutePath());
         mediaRecorder.setVideoSize(width, height);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         mediaRecorder.setVideoEncodingBitRate(5 * 1024 * 1024);
-        mediaRecorder.setVideoFrameRate(30);
+        mediaRecorder.setVideoFrameRate(60);
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createDirectory() {
+        if (Environment.getExternalStorageState().equals(equals(Environment.MEDIA_MOUNTED))) {
+            String rootDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "screenrecord" + "/";
+            File file = new File(rootDir);
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    Toast.makeText(getApplicationContext(), "创建失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(getApplicationContext(), "创建成功", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
